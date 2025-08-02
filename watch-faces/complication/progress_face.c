@@ -356,9 +356,16 @@ bool progress_face_loop(movement_event_t event, void *context) {
                     // Update display at the top of each minute
                     {
                         watch_date_time_t date_time = movement_get_local_date_time();
-                        if (date_time.unit.second == 0) {
+                        if (event.event_type == EVENT_LOW_ENERGY_UPDATE || date_time.unit.second == 0) {
                             _progress_face_update_display(state);
                         }
+
+                        if (watch_get_lcd_type() == WATCH_LCD_TYPE_CLASSIC) {
+                            // clear out the last two digits and replace them with the sleep mode indicator
+                            watch_display_text(WATCH_POSITION_SECONDS, "  ");
+                        }
+                        if (!watch_sleep_animation_is_running()) watch_start_sleep_animation(1000);
+            break;
                     }
                     break;
             }
