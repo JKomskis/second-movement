@@ -317,6 +317,7 @@ bool progress_face_loop(movement_event_t event, void *context) {
 
     switch (event.event_type) {
         case EVENT_ACTIVATE:
+            if (watch_sleep_animation_is_running()) watch_stop_sleep_animation();
             if (state->current_page == PROGRESS_PAGE_DISPLAY) {
                 _progress_face_update_display(state);
             }
@@ -360,11 +361,14 @@ bool progress_face_loop(movement_event_t event, void *context) {
                             _progress_face_update_display(state);
                         }
 
-                        if (watch_get_lcd_type() == WATCH_LCD_TYPE_CLASSIC) {
-                            // clear out the last two digits and replace them with the sleep mode indicator
-                            watch_display_text(WATCH_POSITION_SECONDS, "  ");
+                        if (event.event_type == EVENT_LOW_ENERGY_UPDATE)
+                        {
+                            if (watch_get_lcd_type() == WATCH_LCD_TYPE_CLASSIC) {
+                                // clear out the last two digits and replace them with the sleep mode indicator
+                                watch_display_text(WATCH_POSITION_SECONDS, "  ");
+                            }
+                            if (!watch_sleep_animation_is_running()) watch_start_sleep_animation(1000);
                         }
-                        if (!watch_sleep_animation_is_running()) watch_start_sleep_animation(1000);
             break;
                     }
                     break;
